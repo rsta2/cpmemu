@@ -12,6 +12,11 @@ Overview
 
 CPMemu is a CP/M 2.2 emulator running on the Raspberry Pi and on other Linux systems. On the Raspberry Pi CPMemu can be used as a bare metal solution based on the Circle environment. CPMemu is currently under development.
 
+Tools
+-----
+
+*cpmdisk* is a tool program running on Linux which manipulates CP/M disk image files. It reads, writes and deletes files from/to CP/M disk images, lists the contents of a disk image or creates a new disk image file. The possible command line arguments will be displayed if *cpmdisk* is called without an argument.
+
 External Sources
 ----------------
 
