@@ -1,0 +1,17 @@
+*.o
+*.a
+*.elf
+*.lst
+*.img
+*.map
+*.bin
+*.com
+*~
+Config.mk
+maketables
+tables.h
+cpmemu
+cpmdisk
+hex2bin
+.directory
+tmp/

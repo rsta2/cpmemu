@@ -1,0 +1,24 @@
+#
+# Makefile.linux
+#
+
+CFLAGS	= -Wall -O2
+
+OBJS	= main.o z80computer.o z80emu.o z80memory.o z80ports.o console.o ramdisk.o
+
+all: cpmemu cpmdisk
+
+cpmemu: $(OBJS)
+	g++ -o $@ $(OBJS)
+
+z80emu.o: tables.h
+
+tables.h: maketables.c
+	gcc -Wall -o maketables $<
+	./maketables > $@
+
+cpmdisk: cpmdisk.c
+	gcc -Wall -O -o $@ $<
+
+clean:
+	rm -f $(OBJS) cpmemu cpmdisk maketables tables.h
