@@ -3,6 +3,7 @@
 #
 
 CFLAGS	= -Wall -O2 -fsigned-char
+CPPFLAGS= $(CFLAGS)
 
 OBJS	= main.o z80computer.o z80emu.o z80memory.o z80ports.o console.o ramdisk.o
 
