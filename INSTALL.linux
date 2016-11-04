@@ -1,0 +1,73 @@
+INSTALL ON LINUX
+
+This file describes the installation of CPMemu on Linux (including Raspbian).
+
+
+BUILDING
+
+1. Go to the CPMemu root directory and enter:
+
+	make -f Makefile.linux clean
+	make -f Makefile.linux
+
+This builds the emulator binary "cpmemu" and the "cpmdisk" tool.
+
+
+INSTALLATION
+
+2. Now the CP/M system has to be build. Just enter:
+
+	cd system/
+	make clean
+	make install
+
+This creates a file "system.bin" in the system/ subdirectory which is also
+installed in the CPMemu root directory.
+
+Please note that the system is not build from scratch from .asm files because
+this is only possible on a running CP/M system using the MAC macro assembler.
+Instead the CP/M components are available in .hex files which may be replaced
+later when you have CPMemu running.
+
+3. At last the CP/M disk image file has to be prepared. Go to the CPMemu root
+directory and enter:
+
+	./cpmdisk init
+	./cpmdisk write system/shutdown.com
+
+This creates the file "cpmdisk.bin" and writes the file "system/shutdown.com" to
+it. Because CP/M disks have only one directory it is saved without path there.
+
+4. Now you can add more CP/M binaries and files to the disk image file. These
+files do not come with CPMemu but have to be downloaded from archives on the
+Internet (see the links in the "README.md" file). You should put all extracted
+CP/M files, that you want, to an empty directory (say "cpmfiles") and enter:
+
+	./cpmdisk write cpmfiles/*
+	./cpmdisk dir
+
+This writes all CP/M files to the disk image file "cpmdisk.bin" and displays the
+CP/M directory afterwards.
+
+
+RUNNING
+
+Now you can start CPMemu from its root directory using:
+
+	./cpmemu
+
+The CP/M prompt "A>" is displayed and you can enter an command:
+
+	A>dir
+	A>...		(something else)
+	A>shutdown
+
+The last command writes the CP/M disk image back to the SD card and quits
+"cpmemu".
+
+Files created during the CP/M session can be accessed using:
+
+	./cpmdisk dir
+	./cpmdisk read filename.ext
+
+The file will be copied to the current directory.

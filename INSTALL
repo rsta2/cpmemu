@@ -1,0 +1,107 @@
+BARE METAL INSTALL
+
+This file describes the installation of CPMemu as bare metal application on the
+Raspberry Pi. The build host is normally a Linux system.
+
+
+REQUIREMENTS
+
+You must be able to successfully build and run sample programs of a recent
+version of the Circle bare metal environment on your Raspberry Pi. If not, go to
+the following website and follow the instructions in the "README.md" file:
+
+	https://github.com/rsta2/circle
+
+
+BUILDING
+
+1. Before CPMemu can be built the Circle libraries must be built as noted in the
+Circle instructions. The model number of your Raspberry Pi has to be chosen with
+the "RASPPI" variable in Rules.mk or Config.mk. After building the Circle
+standard libraries using "makeall" you have to manually build the SD card
+library. In the Circle root directory enter:
+
+	cd addon/SDCard
+	make
+
+If you want to change the Raspberry Pi model later, you have to "clean" all
+Circle directories from libraries and object files first.
+
+2. When Circle is successfully build for your Raspberry Pi, CPMemu has to be
+configured so it can find the Circle directory on your disk. Load the file
+"Makefile" (in the CPMemu root directory) into an editor and change the
+following line according to your needs:
+
+	CIRCLEHOME ?= ../circle
+
+Alternatively you can create a file "Config.mk" in the CPMemu root directory and
+add this line (with the right path) to the new file. The file "Config.mk" will
+be ignored by "git".
+
+3. Now you can build CPMemu (including the "cpmdisk" tool). In the CPMemu root
+directory enter:
+
+	make clean
+	make
+
+
+INSTALLATION
+
+If this step was successful, a file "kernel.img" was created in the CPMemu root
+directory. This file has to be copied to the first FAT partition of a SD card
+along with the firmware files as described in the Circle instructions.
+
+4. Now the CP/M system has to be build. Just enter:
+
+	cd system/
+	make clean
+	make
+
+This creates a file "system.bin" in the system/ subdirectory which has to be
+copied to the first FAT partition of the SD card too.
+
+Please note that the system is not build from scratch from .asm files because
+this is only possible on a running CP/M system using the MAC macro assembler.
+Instead the CP/M components are available in .hex files which may be replaced
+later when you have CPMemu running.
+
+5. At last the CP/M disk image file has to be prepared. Go to the CPMemu root
+directory and enter:
+
+	./cpmdisk init
+	./cpmdisk write system/shutdown.com
+
+This creates the file "cpmdisk.bin" and writes the file "system/shutdown.com" to
+it. Because CP/M disks have only one directory it is saved without path there.
+
+6. Now you can add more CP/M binaries and files to the disk image file. These
+files do not come with CPMemu but have to be downloaded from archives on the
+Internet (see the links in the "README.md" file). You should put all extracted
+CP/M files, that you want, to an empty directory (say "cpmfiles") and enter:
+
+	./cpmdisk write cpmfiles/*
+	./cpmdisk dir
+
+This writes all CP/M files to the disk image file "cpmdisk.bin" and displays the
+CP/M directory afterwards.
+
+7. Finally the file "cpmdisk.bin" has to be copied to the root directory of the
+SD card.
+
+
+RUNNING
+
+Now you can put the SD card into your Raspberry Pi. You need a HDMI display and
+an USB keyboard to use CPMemu. Both must be connected to your Raspberry Pi. Now
+you can start it.
+
+After some seconds the CP/M prompt "A>" is displayed and you can enter an
+command:
+
+	A>dir
+	A>...		(something else)
+	A>shutdown
+
+The last command writes the CP/M disk image back to the SD card and shuts the
+system down. Don't switch off the system before the green Act LED is switched
+off. This may take some seconds. Otherwise the SD card may be corrupted.
