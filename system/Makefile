@@ -2,7 +2,7 @@
 # Makefile
 #
 
-BIN = os2ccp.bin os3bdos.bin bios.bin
+BIN = ccp.bin bdos.bin bios.bin
 
 all: system.bin shutdown.com
 
@@ -19,6 +19,9 @@ hex2bin: hex2bin.c
 
 %.com: %.hex
 	./hex2bin $< $@
+
+install: all
+	cp system.bin ..
 
 clean:
 	rm -f $(BIN) system.bin shutdown.com hex2bin

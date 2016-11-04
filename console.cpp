@@ -93,7 +93,7 @@ boolean CConsole::Initialize (void)
 	}
 
 	// set 80x24 characters window
-	const char InitString[] = "\x1b[H\x1b[J\x1b[2;25r";
+	const char InitString[] = "\x1b[H\x1b[J\x1b[1;24r";
 	m_pScreen->Write (InitString, sizeof InitString-1);
 #else
 	if (ioctl (0, TCGETA, &m_SaveTTY) < 0)
