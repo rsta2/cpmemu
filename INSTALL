@@ -17,9 +17,10 @@ BUILDING
 
 1. Before CPMemu can be built the Circle libraries must be built as noted in the
 Circle instructions. The model number of your Raspberry Pi has to be chosen with
-the "RASPPI" variable in Rules.mk or Config.mk. After building the Circle
-standard libraries using "makeall" you have to manually build the SD card
-library. In the Circle root directory enter:
+the "RASPPI" variable in Rules.mk or Config.mk. Further your keyboard map has to
+be selected at the end of the file "include/circle/sysconfig.h". After building
+the Circle standard libraries using "makeall" you have to manually build the
+SDcard library. In the Circle root directory enter:
 
 	cd addon/SDCard
 	make
