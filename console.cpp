@@ -171,7 +171,7 @@ boolean CConsole::GetStatus (void)
 		ssize_t nBytesRead = read (0, &ucCharBuf, sizeof ucCharBuf);
 		if (nBytesRead <= 0)
 		{
-			fprintf (stderr, "read returned %d\n", nBytesRead);
+			fprintf (stderr, "read returned %d\n", (int) nBytesRead);
 
 			m_ucCharBuf = 0;
 
@@ -201,7 +201,7 @@ u8 CConsole::GetChar (void)
 		u8 ucCharBuf;
 		while ((nBytesRead = read (0, &ucCharBuf, sizeof ucCharBuf)) <= 0)
 		{
-			fprintf (stderr, "read returned %d\n", nBytesRead);
+			fprintf (stderr, "read returned %d\n", (int) nBytesRead);
 		}
 
 		m_ucCharBuf = ucCharBuf;

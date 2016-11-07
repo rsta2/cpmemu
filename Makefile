@@ -17,9 +17,13 @@ LIBS	= $(CIRCLEHOME)/addon/SDCard/libsdcard.a \
 
 EXTRACLEAN = maketables tables.h cpmdisk
 
-all: kernel.img cpmdisk
+all: cpmdisk
 
 include $(CIRCLEHOME)/app/Rules.mk
+
+TARGET	?= kernel
+
+all: $(TARGET).img
 
 z80emu.o: tables.h
 

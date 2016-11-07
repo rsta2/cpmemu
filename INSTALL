@@ -89,6 +89,10 @@ CP/M directory afterwards.
 7. Finally the file "cpmdisk.bin" has to be copied to the root directory of the
 SD card.
 
+With a recent version of Circle you can also select your keyboard map using the
+file "cmdline.txt" on the SD card. See the file "doc/cmdline.txt" in the Circle
+directory for details.
+
 
 RUNNING
 
