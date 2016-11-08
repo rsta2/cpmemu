@@ -33,6 +33,9 @@ CKernel::CKernel (void)
 	m_EMMC (&m_Interrupt, &m_Timer, &m_ActLED),
 	m_DWHCI (&m_Interrupt, &m_Timer),
 	m_Computer (&m_FileSystem)
+#ifdef ARM_ALLOW_MULTI_CORE
+	, m_MultiCore (&m_Computer, &m_Memory, &m_FileSystem)
+#endif
 {
 }
 
@@ -110,14 +113,25 @@ boolean CKernel::Initialize (void)
 		bOK = m_Computer.Initialize ();
 	}
 
+#ifdef ARM_ALLOW_MULTI_CORE
+	if (bOK)
+	{
+		bOK = m_MultiCore.Initialize ();
+	}
+#endif
+
 	return bOK;
 }
 
 TShutdownMode CKernel::Run (void)
 {
+#ifdef ARM_ALLOW_MULTI_CORE
+	m_MultiCore.Run (0);
+#else
 	m_Computer.Run ();
 
 	m_FileSystem.UnMount ();
+#endif
 
 	return ShutdownHalt;
 }

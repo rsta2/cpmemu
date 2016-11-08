@@ -1,5 +1,5 @@
 //
-// kernel.h
+// multicore.cpp
 //
 // Copyright (C) 2016  R. Stange <rsta2@o2online.de>
 //
@@ -20,67 +20,41 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-#ifndef _kernel_h
-#define _kernel_h
-
-#include <circle/memory.h>
-#include <circle/actled.h>
-#include <circle/koptions.h>
-#include <circle/devicenameservice.h>
-#include <circle/screen.h>
-#include <circle/serial.h>
-#include <circle/exceptionhandler.h>
-#include <circle/interrupt.h>
-#include <circle/timer.h>
-#include <circle/logger.h>
-#include <SDCard/emmc.h>
-#include <circle/fs/fat/fatfs.h>
-#include <circle/usb/dwhcidevice.h>
 #include <circle/sysconfig.h>
-#include <circle/types.h>
-#include "z80computer.h"
 
 #ifdef ARM_ALLOW_MULTI_CORE
-	#include "multicore.h"
-#endif
 
-enum TShutdownMode
+#include "multicore.h"
+#include <assert.h>
+
+CMultiCoreEmulation::CMultiCoreEmulation (CZ80Computer   *pComputer,
+					  CMemorySystem  *pMemorySystem,
+					  CFATFileSystem *pFileSystem)
+:	CMultiCoreSupport (pMemorySystem),
+	m_pComputer (pComputer),
+	m_pFileSystem (pFileSystem)
 {
-	ShutdownNone,
-	ShutdownHalt,
-	ShutdownReboot
-};
+}
 
-class CKernel
+CMultiCoreEmulation::~CMultiCoreEmulation (void)
 {
-public:
-	CKernel (void);
-	~CKernel (void);
+}
 
-	boolean Initialize (void);
+void CMultiCoreEmulation::Run (unsigned nCore)
+{
+	// Core 0 handles the IRQs by default and does not need a special handling here.
+	// 	It is halted automatically when core 1 terminates.
 
-	TShutdownMode Run (void);
-	
-private:
-	// do not change this order
-	CMemorySystem		m_Memory;
-	CActLED			m_ActLED;
-	CKernelOptions		m_Options;
-	CDeviceNameService	m_DeviceNameService;
-	CScreenDevice		m_Screen;
-	CSerialDevice		m_Serial;
-	CExceptionHandler	m_ExceptionHandler;
-	CInterruptSystem	m_Interrupt;
-	CTimer			m_Timer;
-	CLogger			m_Logger;
-	CEMMCDevice		m_EMMC;
-	CFATFileSystem		m_FileSystem;
-	CDWHCIDevice		m_DWHCI;
+	// Core 2 and 3 are not used and can halt immediately.
 
-	CZ80Computer		m_Computer;
-#ifdef ARM_ALLOW_MULTI_CORE
-	CMultiCoreEmulation	m_MultiCore;
-#endif
-};
+	if (nCore == 1)
+	{
+		assert (m_pComputer != 0);
+		m_pComputer->Run ();
+
+		assert (m_pFileSystem != 0);
+		m_pFileSystem->UnMount ();
+	}
+}
 
 #endif

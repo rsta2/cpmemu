@@ -18,9 +18,11 @@ BUILDING
 1. Before CPMemu can be built the Circle libraries must be built as noted in the
 Circle instructions. The model number of your Raspberry Pi has to be chosen with
 the "RASPPI" variable in Rules.mk or Config.mk. Further your keyboard map has to
-be selected at the end of the file "include/circle/sysconfig.h". After building
-the Circle standard libraries using "makeall" you have to manually build the
-SDcard library. In the Circle root directory enter:
+be selected at the end of the file "include/circle/sysconfig.h". In the same
+file you can enable multi-core support for the Raspberry Pi 2 and 3 (enable the
+#define ARM_ALLOW_MULTI_CORE). After building the Circle standard libraries
+using "makeall" you have to manually build the SDcard library. In the Circle
+root directory enter:
 
 	cd addon/SDCard
 	make
@@ -91,7 +93,8 @@ SD card.
 
 With a recent version of Circle you can also select your keyboard map using the
 file "cmdline.txt" on the SD card. See the file "doc/cmdline.txt" in the Circle
-directory for details.
+directory for details. If you want to supress the displayed multi-core log
+messages you can do this by adding "loglevel=3" to "cmdline.txt".
 
 
 RUNNING

@@ -6,7 +6,9 @@
 
 CIRCLEHOME ?= ../circle
 
-OBJS	= main.o kernel.o z80computer.o z80emu.o z80memory.o z80ports.o console.o ramdisk.o
+OBJS	= main.o kernel.o \
+	  z80computer.o z80emu.o z80memory.o z80ports.o \
+	  console.o ramdisk.o multicore.o
 
 LIBS	= $(CIRCLEHOME)/addon/SDCard/libsdcard.a \
 	  $(CIRCLEHOME)/lib/usb/libusb.a \
