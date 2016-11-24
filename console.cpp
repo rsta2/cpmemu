@@ -25,6 +25,7 @@
 
 #ifdef __circle__
 	#include <circle/devicenameservice.h>
+	#include <circle/cputhrottle.h>
 	#include <circle/logger.h>
 	#include <circle/string.h>
 	#include <circle/util.h>
@@ -190,9 +191,19 @@ u8 CConsole::GetChar (void)
 	assert (m_bInited);
 
 #ifdef __circle__
-	while (m_ucCharBuf == 0)
+	if (m_ucCharBuf == 0)
 	{
-		// just wait for key
+		TCPUSpeed PreviousSpeed = CCPUThrottle::Get ()->SetSpeed (CPUSpeedLow);
+
+		while (m_ucCharBuf == 0)
+		{
+			// just wait for key
+		}
+
+		if (PreviousSpeed != CPUSpeedUnknown)
+		{
+			CCPUThrottle::Get ()->SetSpeed (PreviousSpeed);
+		}
 	}
 #else
 	if (m_ucCharBuf == 0)

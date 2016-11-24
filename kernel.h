@@ -27,6 +27,7 @@
 #include <circle/actled.h>
 #include <circle/koptions.h>
 #include <circle/devicenameservice.h>
+#include <circle/cputhrottle.h>
 #include <circle/screen.h>
 #include <circle/serial.h>
 #include <circle/exceptionhandler.h>
@@ -67,6 +68,7 @@ private:
 	CActLED			m_ActLED;
 	CKernelOptions		m_Options;
 	CDeviceNameService	m_DeviceNameService;
+	CCPUThrottle		m_CPUThrottle;
 	CScreenDevice		m_Screen;
 	CSerialDevice		m_Serial;
 	CExceptionHandler	m_ExceptionHandler;

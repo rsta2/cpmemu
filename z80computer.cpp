@@ -22,7 +22,12 @@
 //
 #include "z80computer.h"
 
-#define CYCLES_PER_STEP		100
+#ifdef __circle__
+	#include <circle/timer.h>
+	#include <circle/cputhrottle.h>
+#endif
+
+#define CYCLES_PER_STEP		10000
 
 #ifdef __circle__
 CZ80Computer::CZ80Computer (CFATFileSystem *pFileSystem)
@@ -70,9 +75,23 @@ void CZ80Computer::Run (void)
 {
 	Z80Reset (&m_CPU);
 
+#ifdef __circle__
+	unsigned nLastTicks = CTimer::Get ()->GetClockTicks ();
+#endif
+
 	while (m_bContinue)
 	{
 		Z80Emulate (&m_CPU, CYCLES_PER_STEP);
+
+#ifdef __circle__
+		unsigned nTicks = CTimer::Get ()->GetClockTicks ();
+		if (nTicks - nLastTicks >= 4*CLOCKHZ)			// call this every 4 seconds
+		{
+			CCPUThrottle::Get ()->SetOnTemperature ();
+
+			nLastTicks = nTicks;
+		}
+#endif
 	}
 }
 
