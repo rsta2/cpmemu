@@ -47,6 +47,8 @@ public:
 	u8 GetChar (void);
 
 #ifdef __circle__
+	void SetLEDs (void);
+
 private:
 	static void KeyPressedHandler (const char *pString);
 #endif
@@ -55,6 +57,8 @@ private:
 #ifdef __circle__
 	CUSBKeyboardDevice *m_pKeyboard;
 	CScreenDevice *m_pScreen;
+
+	u8 m_ucLEDStatus;
 #else
 	struct termio m_SaveTTY;
 #endif

@@ -48,6 +48,7 @@ CConsole::CConsole (void)
 #ifdef __circle__
 	m_pKeyboard (0),
 	m_pScreen (0),
+	m_ucLEDStatus (0xFF),
 #endif
 	m_bInited (FALSE),
 	m_ucCharBuf (0)
@@ -198,6 +199,8 @@ u8 CConsole::GetChar (void)
 		while (m_ucCharBuf == 0)
 		{
 			// just wait for key
+
+			SetLEDs ();
 		}
 
 		if (PreviousSpeed != CPUSpeedUnknown)
@@ -237,6 +240,20 @@ u8 CConsole::GetChar (void)
 }
 
 #ifdef __circle__
+
+void CConsole::SetLEDs (void)
+{
+	assert (m_pKeyboard != 0);
+	u8 ucLEDStatus = m_pKeyboard->GetLEDStatus ();
+	if (ucLEDStatus != m_ucLEDStatus)
+	{
+		m_ucLEDStatus = ucLEDStatus;
+		if (!m_pKeyboard->SetLEDs (m_ucLEDStatus))
+		{
+			CLogger::Get ()->Write (FromConsole, LogError, "Cannot set LED status");
+		}
+	}
+}
 
 void CConsole::KeyPressedHandler (const char *pString)
 {

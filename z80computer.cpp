@@ -91,6 +91,8 @@ void CZ80Computer::Run (void)
 
 			nLastTicks = nTicks;
 		}
+
+		m_Console.SetLEDs ();
 #endif
 	}
 }
