@@ -31,7 +31,7 @@ External Sources
 
 CPMemu is making use of the following external sources:
 
-* [z80emu Z80 CPU emulator](https://github.com/anotherlin/z80emu/) by Lin Ke-Fong
+* [z80cpp Z80 CPU emulator](https://github.com/jsanchezv/z80cpp/) by Jose Luis Sanchez
 * [CP/M 2.2 original source](http://www.cpm.z80.de/download/cpm2-plm.zip) on ["The Unofficial CP/M Web site"](http://www.cpm.z80.de/)
 * [MAC macro assembler](http://www.cpm.z80.de/download/mac-b.zip) on ["The Unofficial CP/M Web site"](http://www.cpm.z80.de/)
 

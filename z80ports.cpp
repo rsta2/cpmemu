@@ -1,7 +1,7 @@
 //
 // z80ports.cpp
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2017  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -22,7 +22,6 @@
 //
 #include "z80ports.h"
 #include "z80computer.h"
-#include "z80stub.h"
 #include "config.h"
 #include <assert.h>
 
@@ -182,18 +181,4 @@ void CZ80Ports::PortOutput (u16 usPort, u8 ucValue)
 	default:
 		break;
 	}
-}
-
-// Stubs:
-
-unsigned char PortInput (unsigned short usPort)
-{
-	assert (CZ80Ports::s_pThis != 0);
-	return CZ80Ports::s_pThis->PortInput (usPort);
-}
-
-void PortOutput (unsigned short usPort, unsigned char ucValue)
-{
-	assert (CZ80Ports::s_pThis != 0);
-	CZ80Ports::s_pThis->PortOutput (usPort, ucValue);
 }

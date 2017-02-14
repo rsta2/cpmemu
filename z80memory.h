@@ -1,7 +1,7 @@
 //
 // z80memory.h
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2017  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -29,6 +29,8 @@
 	#include <circle/fs/fat/fatfs.h>
 #endif
 
+#define Z80_RAM_SIZE	0x10000
+
 class CZ80Memory
 {
 public:
@@ -43,10 +45,34 @@ public:
 
 	void *GetDMAPointer (u16 usAddress, u16 usLength);
 
-#ifdef __circle__
+	u8 ReadByte (u16 usAddress)
+	{
+		return memory[usAddress];
+	}
+
+	u16 ReadWord (u16 usAddress)
+	{
+		return         memory[usAddress]
+		       | (u16) memory[usAddress+1] << 8;
+	}
+
+	void WriteByte (u16 usAddress, u8 ucValue)
+	{
+		memory[usAddress] = ucValue;
+	}
+
+	void WriteWord (u16 usAddress, u16 usValue)
+	{
+		memory[usAddress]   = usValue & 0xFF;
+		memory[usAddress+1] = usValue >> 8;
+	}
+
 private:
+#ifdef __circle__
 	CFATFileSystem *m_pFileSystem;
 #endif
+
+	u8 memory[Z80_RAM_SIZE];
 };
 
 #endif

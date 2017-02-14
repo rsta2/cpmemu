@@ -1,7 +1,7 @@
 //
 // z80computer.cpp
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2017  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -27,7 +27,7 @@
 	#include <circle/cputhrottle.h>
 #endif
 
-#define CYCLES_PER_STEP		10000
+#define INSTRUCTIONS_PER_STEP		1000
 
 #ifdef __circle__
 CZ80Computer::CZ80Computer (CFATFileSystem *pFileSystem)
@@ -38,6 +38,7 @@ CZ80Computer::CZ80Computer (void)
 :
 #endif
 	m_Ports (this, &m_Memory, &m_Console, &m_RAMDisk),
+	m_CPU (this),
 	m_bContinue (TRUE)
 {
 }
@@ -73,7 +74,7 @@ boolean CZ80Computer::Initialize (void)
 
 void CZ80Computer::Run (void)
 {
-	Z80Reset (&m_CPU);
+	m_CPU.reset ();
 
 #ifdef __circle__
 	unsigned nLastTicks = CTimer::Get ()->GetClockTicks ();
@@ -81,7 +82,10 @@ void CZ80Computer::Run (void)
 
 	while (m_bContinue)
 	{
-		Z80Emulate (&m_CPU, CYCLES_PER_STEP);
+		for (unsigned i = 1; i <= INSTRUCTIONS_PER_STEP; i++)
+		{
+			m_CPU.execute ();
+		}
 
 #ifdef __circle__
 		unsigned nTicks = CTimer::Get ()->GetClockTicks ();
@@ -100,4 +104,56 @@ void CZ80Computer::Run (void)
 void CZ80Computer::Shutdown (void)
 {
 	m_bContinue = FALSE;
+}
+
+uint8_t CZ80Computer::fetchOpcode (uint16_t address)
+{
+	return m_Memory.ReadByte (address);
+}
+
+uint8_t CZ80Computer::peek8 (uint16_t address)
+{
+	return m_Memory.ReadByte (address);
+}
+
+void CZ80Computer::poke8 (uint16_t address, uint8_t value)
+{
+	m_Memory.WriteByte (address, value);
+}
+
+uint16_t CZ80Computer::peek16 (uint16_t address)
+{
+	return m_Memory.ReadWord (address);
+}
+
+void CZ80Computer::poke16 (uint16_t address, uint16_t word)
+{
+	m_Memory.WriteWord (address, word);
+}
+
+uint8_t CZ80Computer::inPort (uint16_t port)
+{
+	return m_Ports.PortInput (port);
+}
+
+void CZ80Computer::outPort (uint16_t port, uint8_t value)
+{
+	m_Ports.PortOutput (port, value);
+}
+
+void CZ80Computer::addressOnBus (uint16_t address, uint32_t wstates)
+{
+}
+
+void CZ80Computer::interruptHandlingTime (uint32_t wstates)
+{
+}
+
+uint8_t CZ80Computer::breakpoint (uint16_t address, uint8_t opcode)
+{
+	return opcode;
+}
+
+void CZ80Computer::execDone (void)
+{
 }

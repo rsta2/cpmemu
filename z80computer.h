@@ -1,7 +1,7 @@
 //
 // z80computer.h
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2017  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -23,18 +23,19 @@
 #ifndef _z80computer_h
 #define _z80computer_h
 
-#include "z80emu.h"
+#include "z80operations.h"
 #include "z80memory.h"
 #include "console.h"
 #include "ramdisk.h"
 #include "z80ports.h"
+#include "z80.h"
 #include "types.h"
 
 #ifdef __circle__
 	#include <circle/fs/fat/fatfs.h>
 #endif
 
-class CZ80Computer
+class CZ80Computer : public Z80operations
 {
 public:
 #ifdef __circle__
@@ -50,12 +51,25 @@ public:
 
 	void Shutdown (void);
 
+	// Z80operations:
+	uint8_t fetchOpcode (uint16_t address);
+	uint8_t peek8 (uint16_t address);
+	void poke8 (uint16_t address, uint8_t value);
+	uint16_t peek16 (uint16_t address);
+	void poke16 (uint16_t address, uint16_t word);
+	uint8_t inPort (uint16_t port);
+	void outPort (uint16_t port, uint8_t value);
+	void addressOnBus (uint16_t address, uint32_t wstates);
+	void interruptHandlingTime (uint32_t wstates);
+	uint8_t breakpoint (uint16_t address, uint8_t opcode);
+	void execDone (void);
+
 private:
-	Z80_STATE  m_CPU;
 	CZ80Memory m_Memory;
 	CConsole   m_Console;
 	CRAMDisk   m_RAMDisk;
 	CZ80Ports  m_Ports;
+	Z80        m_CPU;
 
 	boolean m_bContinue;
 };

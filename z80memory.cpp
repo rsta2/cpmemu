@@ -1,7 +1,7 @@
 //
 // z80memory.cpp
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2017  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -21,7 +21,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 #include "z80memory.h"
-#include "z80stub.h"
 #include "config.h"
 #include <assert.h>
 
@@ -30,8 +29,6 @@
 #else
 	#include <stdio.h>
 #endif
-
-unsigned char memory[Z80_RAM_SIZE];
 
 #ifdef __circle__
 static const char FromMemory[] = "z80mem";
