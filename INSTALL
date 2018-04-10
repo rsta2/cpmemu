@@ -113,3 +113,20 @@ command:
 The last command writes the CP/M disk image back to the SD card and shuts the
 system down. Don't switch off the system before the green Act LED is switched
 off. This may take some seconds. Otherwise the SD card may be corrupted.
+
+
+UPDATE
+
+This version of CPMemu optionally supports two CP/M disk drives. To use a second
+disk drive you have to create a second disk image file "cpmdisk2.bin" as
+follows:
+
+	./cpmdisk init -f cpmdisk2.bin
+
+The file "cpmdisk2.bin" has to be copied to the root directory of the SD card
+along with the other files. Please note that using a second disk drive may
+increase the time needed for starting and shutdown.
+
+If you do an update from a previous version, be sure to replace the file
+"system.bin" on the SD card with the newly built version from the system/
+subdirectory (see 4.)!

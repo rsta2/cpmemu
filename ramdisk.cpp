@@ -1,7 +1,7 @@
 //
 // ramdisk.cpp
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2018  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -37,12 +37,15 @@ static const char FromRAMDisk[] = "ramdisk";
 #endif
 
 #ifdef __circle__
-CRAMDisk::CRAMDisk (CFATFileSystem *pFileSystem)
+CRAMDisk::CRAMDisk (CFATFileSystem *pFileSystem, unsigned nDrive)
 :	m_pFileSystem (pFileSystem),
 #else
-CRAMDisk::CRAMDisk (void)
+CRAMDisk::CRAMDisk (unsigned nDrive)
 :
 #endif
+	m_nDrive (nDrive),
+	m_bAvailable (FALSE),
+	m_bWritten (FALSE),
 	m_pBuffer (0)
 {
 }
@@ -59,12 +62,18 @@ boolean CRAMDisk::Initialize (void)
 	m_pBuffer = new u8[DISK_SIZE];
 	assert (m_pBuffer != 0);
 
+	assert (m_nDrive <= 1);
+	const char *pFilename = m_nDrive == 0 ? DISK_A_FILENAME : DISK_B_FILENAME;
+
 #ifdef __circle__
 	assert (m_pFileSystem != 0);
-	unsigned hFile = m_pFileSystem->FileOpen (DISK_FILENAME);
+	unsigned hFile = m_pFileSystem->FileOpen (pFilename);
 	if (hFile == 0)
 	{
-		CLogger::Get ()->Write (FromRAMDisk, LogError, "File not found: %s", DISK_FILENAME);
+		if (m_nDrive == 0)
+		{
+			CLogger::Get ()->Write (FromRAMDisk, LogError, "File not found: %s", pFilename);
+		}
 
 		return FALSE;
 	}
@@ -92,10 +101,13 @@ boolean CRAMDisk::Initialize (void)
 		return FALSE;
 	}
 #else
-	FILE *pFile = fopen (DISK_FILENAME, "r");
+	FILE *pFile = fopen (pFilename, "r");
 	if (pFile == 0)
 	{
-		fprintf (stderr, "File not found: %s\n", DISK_FILENAME);
+		if (m_nDrive == 0)
+		{
+			fprintf (stderr, "File not found: %s\n", pFilename);
+		}
 
 		return FALSE;
 	}
@@ -112,11 +124,20 @@ boolean CRAMDisk::Initialize (void)
 	fclose (pFile);
 #endif
 
+	m_bAvailable = TRUE;
+
 	return TRUE;
+}
+
+boolean CRAMDisk::IsAvailable (void) const
+{
+	return m_bAvailable;
 }
 
 boolean CRAMDisk::Read (unsigned nSector, void *pBuffer)
 {
+	assert (m_bAvailable);
+
 	unsigned nOffset = nSector * SECTOR_SIZE;
 	if (nOffset + SECTOR_SIZE > DISK_SIZE)
 	{
@@ -132,6 +153,8 @@ boolean CRAMDisk::Read (unsigned nSector, void *pBuffer)
 
 boolean CRAMDisk::Write (unsigned nSector, const void *pBuffer)
 {
+	assert (m_bAvailable);
+
 	unsigned nOffset = nSector * SECTOR_SIZE;
 	if (nOffset + SECTOR_SIZE > DISK_SIZE)
 	{
@@ -142,17 +165,29 @@ boolean CRAMDisk::Write (unsigned nSector, const void *pBuffer)
 	assert (pBuffer != 0);
 	memcpy (m_pBuffer + nOffset, pBuffer, SECTOR_SIZE);
 
+	m_bWritten = TRUE;
+
 	return TRUE;
 }
 
 boolean CRAMDisk::Save (void)
 {
+	assert (m_bAvailable);
+
+	if (!m_bWritten)
+	{
+		return TRUE;
+	}
+
+	assert (m_nDrive <= 1);
+	const char *pFilename = m_nDrive == 0 ? DISK_A_FILENAME : DISK_B_FILENAME;
+
 #ifdef __circle__
 	assert (m_pFileSystem != 0);
-	unsigned hFile = m_pFileSystem->FileCreate (DISK_FILENAME);
+	unsigned hFile = m_pFileSystem->FileCreate (pFilename);
 	if (hFile == 0)
 	{
-		CLogger::Get ()->Write (FromRAMDisk, LogError, "Cannot create file: %s", DISK_FILENAME);
+		CLogger::Get ()->Write (FromRAMDisk, LogError, "Cannot create file: %s", pFilename);
 
 		return FALSE;
 	}
@@ -181,10 +216,10 @@ boolean CRAMDisk::Save (void)
 		return FALSE;
 	}
 #else
-	FILE *pFile = fopen (DISK_FILENAME, "w");
+	FILE *pFile = fopen (pFilename, "w");
 	if (pFile == 0)
 	{
-		fprintf (stderr, "Cannot create: %s\n", DISK_FILENAME);
+		fprintf (stderr, "Cannot create: %s\n", pFilename);
 
 		return FALSE;
 	}

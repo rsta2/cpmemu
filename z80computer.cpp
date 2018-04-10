@@ -1,7 +1,7 @@
 //
 // z80computer.cpp
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2018  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -32,12 +32,14 @@
 #ifdef __circle__
 CZ80Computer::CZ80Computer (CFATFileSystem *pFileSystem)
 :	m_Memory (pFileSystem),
-	m_RAMDisk (pFileSystem),
+	m_RAMDisk0 (pFileSystem, 0),
+	m_RAMDisk1 (pFileSystem, 1),
 #else
 CZ80Computer::CZ80Computer (void)
-:
+:	m_RAMDisk0 (0),
+	m_RAMDisk1 (1),
 #endif
-	m_Ports (this, &m_Memory, &m_Console, &m_RAMDisk),
+	m_Ports (this, &m_Memory, &m_Console, &m_RAMDisk0, &m_RAMDisk1),
 	m_bContinue (TRUE)
 {
 }
@@ -58,10 +60,12 @@ boolean CZ80Computer::Initialize (void)
 		return FALSE;
 	}
 
-	if (!m_RAMDisk.Initialize ())
+	if (!m_RAMDisk0.Initialize ())
 	{
 		return FALSE;
 	}
+
+	m_RAMDisk1.Initialize ();
 
 	if (!m_Ports.Initialize ())
 	{

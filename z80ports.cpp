@@ -1,7 +1,7 @@
 //
 // z80ports.cpp
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2018  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -46,6 +46,8 @@ enum TPortAddress
 	PortDiskStatus,			// In
 #define PORT_DISK_STATUS_OK	0x00
 #define PORT_DISK_STATUS_ERROR	0x01
+	PortDiskCount,			// In
+	PortDiskDrive,			// Out
 
 	// Control
 	PortControl	 = 0xE0		// Out
@@ -55,11 +57,15 @@ enum TPortAddress
 
 CZ80Ports *CZ80Ports::s_pThis = 0;
 
-CZ80Ports::CZ80Ports (CZ80Computer *pComputer, CZ80Memory *pMemory, CConsole *pConsole, CRAMDisk *pRAMDisk)
+CZ80Ports::CZ80Ports (CZ80Computer *pComputer, CZ80Memory *pMemory, CConsole *pConsole,
+		      CRAMDisk *pRAMDisk0, CRAMDisk *pRAMDisk1)
 :	m_pComputer (pComputer),
 	m_pMemory (pMemory),
 	m_pConsole (pConsole),
-	m_pRAMDisk (pRAMDisk),
+	m_pRAMDisk0 (pRAMDisk0),
+	m_pRAMDisk1 (pRAMDisk1),
+	m_ucDiskDriveCount (1),
+	m_ucDiskDrive (0),
 	m_ucDiskTrack (0),
 	m_ucDiskSector (0),
 	m_usDMAAddress (0x80),
@@ -76,6 +82,9 @@ CZ80Ports::~CZ80Ports (void)
 
 boolean CZ80Ports::Initialize (void)
 {
+	assert (m_pRAMDisk1 != 0);
+	m_ucDiskDriveCount = m_pRAMDisk1->IsAvailable () ? 2 : 1;
+
 	return TRUE;
 }
 
@@ -95,6 +104,9 @@ u8 CZ80Ports::PortInput (u16 usPort)
 
 	case PortDiskStatus:
 		return m_bDiskStatus ? PORT_DISK_STATUS_OK : PORT_DISK_STATUS_ERROR;
+
+	case PortDiskCount:
+		return m_ucDiskDriveCount;
 
 	default:
 		break;
@@ -134,8 +146,17 @@ void CZ80Ports::PortOutput (u16 usPort, u8 ucValue)
 		m_usDMAAddress |= ucValue << 8;
 		break;
 
-	case PortDiskOperation:
+	case PortDiskOperation: {
 		m_bDiskStatus = FALSE;
+
+		if (m_ucDiskDrive >= m_ucDiskDriveCount)
+		{
+			break;
+		}
+
+		assert (m_ucDiskDrive <= 1);
+		CRAMDisk *pRAMDisk = m_ucDiskDrive == 0 ? m_pRAMDisk0 : m_pRAMDisk1;
+		assert (pRAMDisk != 0);
 
 		assert (m_pMemory != 0);
 		pDMABuffer = m_pMemory->GetDMAPointer (m_usDMAAddress, SECTOR_SIZE);
@@ -146,27 +167,34 @@ void CZ80Ports::PortOutput (u16 usPort, u8 ucValue)
 			switch (ucValue)
 			{
 			case PORT_DISK_READ:
-				assert (m_pRAMDisk != 0);
-				m_bDiskStatus = m_pRAMDisk->Read (nSector, pDMABuffer);
+				m_bDiskStatus = pRAMDisk->Read (nSector, pDMABuffer);
 				break;
 
 			case PORT_DISK_WRITE:
-				assert (m_pRAMDisk != 0);
-				m_bDiskStatus = m_pRAMDisk->Write (nSector, pDMABuffer);
+				m_bDiskStatus = pRAMDisk->Write (nSector, pDMABuffer);
 				break;
 
 			default:
 				break;
 			}
 		}
+		} break;
+
+	case PortDiskDrive:
+		m_ucDiskDrive = ucValue;
 		break;
 
 	case PortControl:
 		switch (ucValue)
 		{
 		case PORT_CONTROL_SAVE:
-			assert (m_pRAMDisk != 0);
-			m_pRAMDisk->Save ();
+			assert (m_pRAMDisk0 != 0);
+			m_pRAMDisk0->Save ();
+
+			if (m_pRAMDisk1->IsAvailable ())
+			{
+				m_pRAMDisk1->Save ();
+			}
 			break;
 
 		case PORT_CONTROL_QUIT:

@@ -1,7 +1,7 @@
 //
 // z80ports.h
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2018  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -33,7 +33,8 @@ class CZ80Computer;
 class CZ80Ports
 {
 public:
-	CZ80Ports (CZ80Computer *pComputer, CZ80Memory *pMemory, CConsole *pConsole, CRAMDisk *pRAMDisk);
+	CZ80Ports (CZ80Computer *pComputer, CZ80Memory *pMemory, CConsole *pConsole,
+		   CRAMDisk *pRAMDisk0, CRAMDisk *pRAMDisk1);
 	~CZ80Ports (void);
 
 	boolean Initialize (void);
@@ -48,8 +49,11 @@ private:
 	CZ80Computer *m_pComputer;
 	CZ80Memory   *m_pMemory;
 	CConsole     *m_pConsole;
-	CRAMDisk     *m_pRAMDisk;
+	CRAMDisk     *m_pRAMDisk0;
+	CRAMDisk     *m_pRAMDisk1;
 
+	u8	m_ucDiskDriveCount;
+	u8	m_ucDiskDrive;
 	u8      m_ucDiskTrack;
 	u8      m_ucDiskSector;
 	u16     m_usDMAAddress;

@@ -71,3 +71,16 @@ Files created during the CP/M session can be accessed using:
 	./cpmdisk read filename.ext
 
 The file will be copied to the current directory.
+
+
+UPDATE
+
+This version of CPMemu optionally supports two CP/M disk drives. To use a second
+disk drive you have to create a second disk image file "cpmdisk2.bin" in the
+CPMemu root directory as follows:
+
+	./cpmdisk init -f cpmdisk2.bin
+
+If you do an update from a previous version, be sure to replace the file
+"system.bin" in the CPMemu root directory with the newly built version from the
+system/ subdirectory (see 2.)!

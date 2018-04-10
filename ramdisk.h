@@ -1,7 +1,7 @@
 //
 // ramdisk.h
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2018  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -33,13 +33,15 @@ class CRAMDisk
 {
 public:
 #ifdef __circle__
-	CRAMDisk (CFATFileSystem *pFileSystem);
+	CRAMDisk (CFATFileSystem *pFileSystem, unsigned nDrive);
 #else
-	CRAMDisk (void);
+	CRAMDisk (unsigned nDrive);
 #endif
 	~CRAMDisk (void);
 
 	boolean Initialize (void);
+
+	boolean IsAvailable (void) const;
 
 	boolean Read (unsigned nSector, void *pBuffer);
 	boolean Write (unsigned nSector, const void *pBuffer);
@@ -50,6 +52,10 @@ private:
 #ifdef __circle__
 	CFATFileSystem *m_pFileSystem;
 #endif
+	unsigned m_nDrive;	// 0 or 1
+	boolean m_bAvailable;
+
+	boolean m_bWritten;
 
 	u8 *m_pBuffer;
 };

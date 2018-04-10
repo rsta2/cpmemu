@@ -1,7 +1,7 @@
 //
 // config.h
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2018  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -25,7 +25,8 @@
 
 // Files
 #define SYSTEM_FILENAME		"system.bin"		// CP/M binary (system)
-#define DISK_FILENAME		"cpmdisk.bin"		// CP/M disk image
+#define DISK_A_FILENAME		"cpmdisk.bin"		// CP/M disk image A:
+#define DISK_B_FILENAME		"cpmdisk2.bin"		// CP/M disk image B:
 
 // Disk image
 #define SECTOR_SIZE		128			// CP/M sector size

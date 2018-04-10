@@ -1,7 +1,7 @@
 //
 // z80computer.h
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2018  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -54,7 +54,8 @@ private:
 	Z80_STATE  m_CPU;
 	CZ80Memory m_Memory;
 	CConsole   m_Console;
-	CRAMDisk   m_RAMDisk;
+	CRAMDisk   m_RAMDisk0;		// drive A:
+	CRAMDisk   m_RAMDisk1;		// drive B:
 	CZ80Ports  m_Ports;
 
 	boolean m_bContinue;

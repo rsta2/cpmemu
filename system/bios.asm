@@ -23,6 +23,8 @@ prtdskdmal	equ	12h	; Out, disk DMA address low
 prtdskdmah	equ	13h	; Out, disk DMA address high
 prtdskop	equ	14h	; Out, disk operation
 prtdskstat	equ	15h	; In,  disk status
+prtdskcount	equ	16h	; In,  disk count
+prtdskdrv	equ	17h	; Out, disk drive
 
 	org	bios
 
@@ -56,6 +58,15 @@ dph0:	dw	0		; no translation
 	dw	dpb0
 	dw	0		; fixed disk
 	dw	map0
+
+dph1:	dw	0		; no translation
+	dw	0
+	dw	0
+	dw	0
+	dw	dirbuf
+	dw	dpb0
+	dw	0		; fixed disk
+	dw	map1
 
 ;	Disk parameter block
 
@@ -142,11 +153,17 @@ punch:	ret
 
 ;	RAM disk
 
-seldsk:	mov	a,c		; check for drive A
-	ora	a
+seldsk:	in	prtdskcount
+	cmp	c
 	lxi	h,0
-	rnz
+	rc
+	rz
+	mov	a,c
+	out	prtdskdrv
+	ora	a
 	lxi	h,dph0
+	rz
+	lxi	h,dph1
 	ret
 
 reset:	mvi	c,0
@@ -183,6 +200,7 @@ trans:	mov	h,b
 msg:	db	'CP/M 2.2',0dh,0ah,0
 
 map0:	ds	(389+8)/8		; one bit per disk block
+map1:	ds	(389+8)/8
 dirbuf:	ds	128
 ccp2	equ	$
 
