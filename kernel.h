@@ -1,7 +1,7 @@
 //
 // kernel.h
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2019  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -36,7 +36,7 @@
 #include <circle/logger.h>
 #include <SDCard/emmc.h>
 #include <circle/fs/fat/fatfs.h>
-#include <circle/usb/dwhcidevice.h>
+#include <circle/usb/usbhcidevice.h>
 #include <circle/sysconfig.h>
 #include <circle/types.h>
 #include "z80computer.h"
@@ -77,7 +77,7 @@ private:
 	CLogger			m_Logger;
 	CEMMCDevice		m_EMMC;
 	CFATFileSystem		m_FileSystem;
-	CDWHCIDevice		m_DWHCI;
+	CUSBHCIDevice		m_USBHCI;
 
 	CZ80Computer		m_Computer;
 #ifdef ARM_ALLOW_MULTI_CORE

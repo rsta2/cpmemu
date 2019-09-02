@@ -1,7 +1,7 @@
 //
 // kernel.cpp
 //
-// Copyright (C) 2016  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2016-2019  R. Stange <rsta2@o2online.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -31,7 +31,7 @@ CKernel::CKernel (void)
 	m_Timer (&m_Interrupt),
 	m_Logger (m_Options.GetLogLevel (), &m_Timer),
 	m_EMMC (&m_Interrupt, &m_Timer, &m_ActLED),
-	m_DWHCI (&m_Interrupt, &m_Timer),
+	m_USBHCI (&m_Interrupt, &m_Timer),
 	m_Computer (&m_FileSystem)
 #ifdef ARM_ALLOW_MULTI_CORE
 	, m_MultiCore (&m_Computer, &m_Memory, &m_FileSystem)
@@ -105,7 +105,7 @@ boolean CKernel::Initialize (void)
 
 	if (bOK)
 	{
-		bOK = m_DWHCI.Initialize ();
+		bOK = m_USBHCI.Initialize ();
 	}
 
 	if (bOK)
