@@ -35,3 +35,5 @@ tables.h: maketables.c
 
 cpmdisk: cpmdisk.c
 	gcc -Wall -O -o $@ $<
+
+-include $(DEPS)
